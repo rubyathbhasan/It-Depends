@@ -1,0 +1,26 @@
+{
+    "id": "81C0B8A2",
+    "path": "~/GitHub/It-Depends/app.R",
+    "project_path": "app.R",
+    "type": "r_source",
+    "hash": "903215870",
+    "contents": "",
+    "dirty": false,
+    "created": 1793735023874.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "5,21",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1793735327,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1793735327462,
+    "read_only": false,
+    "read_only_alternatives": []
+}
