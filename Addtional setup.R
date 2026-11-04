@@ -3,7 +3,8 @@
 #Exporting App to WebAssembly Files
 install.packages("shinylive")
 install.packages(c("callr", "curl", "httr2", "openssl", "processx", "zip"))
-# Since you are in your R Project, "." refers to the current folder
+
+library(shinylive)
 shinylive::export(appdir = ".", destdir = "docs")
 
 
