@@ -16,11 +16,11 @@ ui <- page_navbar(
                              card_header(class = "bg-primary text-white", "What is a Confounder?"),
                              card_body(
                                HTML("
-                                <h5>The 3 Rules of a Confounder:</h5>
+                                <h5>A Confounder needs to fulfill 3 rules simultaneously:</h5>
                                 <ol style='font-size: 0.9em;'>
                                   <li>It is associated with the <b>Exposure</b>.</li>
-                                  <li>It is an independent cause of the <b>Outcome</b>.</li>
-                                  <li>It is <em>not</em> on the causal pathway between them.</li>
+                                  <li>It is an independent cause, risk factor, or protective factor of the <b>Outcome</b>.</li>
+                                  <li>It is <em>not</em> a mediator (not on the causal pathway) between them.</li>
                                 </ol>
                                 <hr>
                                 <div style='text-align:center; font-size: 1.1em; margin: 15px 0;'>
@@ -35,7 +35,7 @@ ui <- page_navbar(
                                    checkboxInput("conf_adjust", strong("Stratify Data (Adjust for Smoking)"), value = FALSE)
                                ),
                                hr(),
-                               h5("Analysis Verdict:"),
+                               h5("Analysis Insight:"),
                                uiOutput("conf_verdict"),
                                hr(),
                                HTML("<p style='font-size: 0.8em; color: #7f8c8d;'><em>*Note: This is a fictional dataset simulated for educational purposes. Inspired by classic examples in Gordis Epidemiology (6th Ed).</em></p>")
@@ -286,7 +286,7 @@ server <- function(input, output) {
   output$conf_verdict <- renderUI({
     res <- conf_calc()
     if (input$conf_adjust) {
-      HTML(paste0("<div style='color: #27ae60;'><strong>CONFOUNDING REVEALED</strong><br>Once we stratify by smoking, the association disappears entirely. The True Stratified OR is exactly <strong>", round(res$smokers$or, 2), "</strong>. Coffee is innocent!</div>"))
+      HTML(paste0("<div style='color: #27ae60;'><strong>CONFOUNDING REVEALED</strong><br>Once we stratify by smoking status, the association disappears entirely. The True Stratified OR is exactly <strong>", round(res$smokers$or, 2), "</strong>. Coffee is innocent!</div>"))
     } else {
       HTML(paste0("<div style='color: #c0392b;'><strong>SPURIOUS ASSOCIATION</strong><br>Looking at the naive data, coffee appears highly dangerous with a <strong>Crude OR of ", round(res$crude$or, 2), "</strong>. This is because coffee drinkers are heavily skewed toward being smokers.</div>"))
     }
