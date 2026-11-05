@@ -10,7 +10,7 @@ ui <- page_navbar(
   # octopus cursor follower
   header = tagList(
     use_waiter(),
-    waiter_show_on_load(
+    waiter_preloader(
       html = tagList(
         spin_fading_circles(), 
         h4("Please wait, it takes some time when opening for the first time...", 
