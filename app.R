@@ -1,4 +1,4 @@
-pacman::p_load(shiny, ggplot2, bslib, dplyr, tidyr)
+pacman::p_load(shiny, ggplot2, bslib, dplyr, tidyr, waiter)
 
 # 1. Define the UI
 # ---------------------------------------------------------
@@ -9,6 +9,15 @@ ui <- page_navbar(
   
   # octopus cursor follower
   header = tagList(
+    use_waiter(),
+    waiter_show_on_load(
+      html = tagList(
+        spin_fading_circles(), 
+        h4("Please wait, it takes some time when opening for the first time...", 
+           style = "color: white; margin-top: 20px;")
+      ),
+      color = "#2C3E50" 
+    ),
     tags$head(
       tags$style(HTML("
         #cursor-follower {
@@ -313,6 +322,10 @@ ui <- page_navbar(
 # 2. Define the Server Logic
 # ---------------------------------------------------------
 server <- function(input, output) {
+  Sys.sleep(4) 
+  
+  # Hide the loading screen
+  waiter_hide()
   
   # ==========================================
   # TAB 1: CONFOUNDING BIAS
