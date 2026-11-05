@@ -11,48 +11,96 @@ ui <- page_navbar(
   # TAB 1: CONFOUNDING BIAS
   # ==========================================
   nav_panel("Confounding",
-            layout_columns(col_widths = c(4, 8),
-                           card(
-                             card_header(class = "bg-primary text-white", "What is a Confounder?"),
-                             card_body(
-                               HTML("
-                                <h5>A Confounder needs to fulfill 3 rules simultaneously:</h5>
-                                <ol style='font-size: 0.9em;'>
-                                  <li>It is associated with the <b>Exposure</b>.</li>
-                                  <li>It is an independent cause, risk factor, or protective factor of the <b>Outcome</b>.</li>
-                                  <li>It is <em>not</em> a mediator (not on the causal pathway) between them.</li>
-                                </ol>
-                                <hr>
-                                <div style='text-align:center; font-size: 1.1em; margin: 15px 0;'>
-                                  <strong>Smoking</strong> (Confounder)<br>
-                                  &#8601; &nbsp; &nbsp; &nbsp; &nbsp; &#8600;<br>
-                                  <strong>Coffee</strong> (Exp) &nbsp; &nbsp; &nbsp; <strong>Heart Disease</strong> (Out)
-                                </div>
-                                <hr>
-                                "),
-                               p("Watch how failing to adjust for smoking creates a massive spurious Odds Ratio between coffee and heart disease."),
-                               div(class = "bg-light p-3 rounded border",
-                                   checkboxInput("conf_adjust", strong("Stratify Data (Adjust for Smoking)"), value = FALSE)
-                               ),
-                               hr(),
-                               h5("Analysis Insight:"),
-                               uiOutput("conf_verdict"),
-                               hr(),
-                               HTML("<p style='font-size: 0.8em; color: #7f8c8d;'><em>*Note: This is a fictional dataset simulated for educational purposes. Inspired by classic examples in Gordis Epidemiology (6th Ed).</em></p>")
-                             )
-                           ),
-                           card(
-                             fillable = FALSE, 
-                             card_header("2x2 Tables & Mathematical Adjustment"),
-                             card_body(
-                               uiOutput("conf_tables"),
-                               hr(),
-                               plotOutput("plot_confounding", height = "400px") 
-                             )
-                           )
+            navset_card_underline(
+              title = "Confounding bias",
+              
+              # -- SUB-TAB 1: Confounding example --
+              nav_panel("Confounding example",
+                        layout_columns(col_widths = c(4, 8),
+                                       card(
+                                         card_header(class = "bg-primary text-white", "What is a Confounder?"),
+                                         card_body(
+                                           HTML("
+                                            <h5>A Confounder needs to fulfill 3 criterea:</h5>
+                                            <ol style='font-size: 0.9em;'>
+                                              <li>It is associated with the <b>Exposure</b>.</li>
+                                              <li>It is an independent cause, risk factor, or protective factor of the <b>Outcome</b>.</li>
+                                              <li>It is <em>not</em> a mediator (not on the causal pathway) between them. </li>
+                                            </ol>
+                                            <hr>
+                                            <div style='text-align:center; font-size: 1.1em; margin: 15px 0;'>
+                                              <strong>Smoking</strong> (Confounder)<br>
+                                              &#8601; &nbsp; &nbsp; &nbsp; &nbsp; &#8600;<br>
+                                              <strong>Coffee</strong> (Exp) &nbsp; &nbsp; &nbsp; <strong>Heart Disease</strong> (Out)
+                                            </div>
+                                            <hr>
+                                            "),
+                                           p("It is showing how failing to adjust for smoking creates a massive spurious Odds Ratio between coffee and heart disease."),
+                                           div(class = "bg-light p-3 rounded border",
+                                               checkboxInput("conf_adjust", strong("Stratify Data (Adjust for Smoking)"), value = FALSE)
+                                           ),
+                                           hr(),
+                                           h5("Analysis Insight:"),
+                                           uiOutput("conf_verdict"),
+                                           hr(),
+                                           HTML("<p style='font-size: 0.8em; color: #7f8c8d;'><em>*Note: This is a fictional dataset simulated for educational purposes. Inspired by classic examples in Gordis Epidemiology (6th Ed).</em></p>")
+                                         )
+                                       ),
+                                       card(
+                                         fillable = FALSE, 
+                                         card_header("2x2 Tables & Mathematical Adjustment"),
+                                         card_body(
+                                           uiOutput("conf_tables"),
+                                           hr(),
+                                           plotOutput("plot_confounding", height = "400px") 
+                                         )
+                                       )
+                        )
+              ),
+              
+              # -- SUB-TAB 2: Risk of Overadjustment--
+              nav_panel("Risk of Overadjustment",
+                        tags$head(
+                          tags$style(HTML("
+                            .sim-container { background-color: #ffffff; max-width: 700px; margin: 0 auto; padding: 20px; border-radius: 10px; }
+                            .diagram { position: relative; height: 250px; margin: 40px 0; background: #f8fbff; border: 2px solid #e0e6ed; border-radius: 8px; }
+                            .node { position: absolute; padding: 15px 20px; background: #34495e; color: white; border-radius: 8px; font-weight: bold; text-align: center; z-index: 2; }
+                            #node-bmi { top: 100px; left: 20px; }
+                            #node-bp { top: 20px; left: 250px; background: #e74c3c; }
+                            #node-esrd { top: 100px; right: 20px; }
+                            .sim-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+                            .sim-line { stroke: #2c3e50; stroke-width: 4; transition: all 0.4s ease; }
+                            .sim-arrow { fill: #2c3e50; transition: all 0.4s ease; }
+                            .blocked-path { stroke: #bdc3c7; stroke-dasharray: 5, 5; }
+                            .blocked-arrow { fill: #bdc3c7; }
+                            .block-x { position: absolute; top: 50px; left: 280px; font-size: 40px; color: #c0392b; font-weight: bold; z-index: 3; }
+                            .controls-box { text-align: center; margin: 20px 0; padding: 20px; background: #ecf0f1; border-radius: 8px; }
+                            .stats-box { display: flex; justify-content: space-around; padding: 20px; font-size: 1.2em; border-top: 2px solid #eee; }
+                            .stat-box { text-align: center; }
+                            .stat-value { font-size: 1.8em; font-weight: bold; display: block; margin-top: 5px; transition: color 0.3s; }
+                          "))
+                        ),
+                        layout_columns(col_widths = c(12),
+                                       card(
+                                         card_header(class = "bg-primary text-white", "Direct vs. Indirect Pathways (BMI -> BP -> ESRD)"),
+                                         card_body(
+                                           div(class = "sim-container",
+                                               div(class = "controls-box",
+                                                   checkboxInput("adjustToggle", 
+                                                                 tags$b("Apply Statistical Adjustment for Blood Pressure", style="color: #c0392b; font-size: 1.1em;"), 
+                                                                 value = FALSE),
+                                                   p("Watch how the model changes when we mathematically 'control' for the mediator.", style = "color: #555; margin-top: 5px;")
+                                               ),
+                                               uiOutput("diagramUI"),
+                                               uiOutput("statsUI")
+                                           )
+                                         )
+                                       )
+                        )
+              )
             )
   ),
-  
+
   # ==========================================
   # TAB 2: BERKSON'S PARADOX & SELECTION BIAS
   # ==========================================
@@ -349,6 +397,69 @@ server <- function(input, output) {
         labs(title = "Stratified Heart Disease Risk (Adjusted for Smoking)", y = "Absolute Risk (%)", x = "Coffee Consumption") +
         theme(legend.position = "none", strip.background = element_rect(fill="#2c3e50", color=NA), strip.text = element_text(color="white", face="bold"))
     }
+  })
+  
+  # ==========================================
+  # TAB 1 - SUB-TAB 2: OVERADJUSTMENT 
+  # ==========================================
+  output$diagramUI <- renderUI({
+    is_adj <- input$adjustToggle
+    
+    path_class <- ifelse(is_adj, "sim-line blocked-path", "sim-line")
+    arrow_class <- ifelse(is_adj, "blocked-arrow", "sim-arrow")
+    
+    HTML(paste0('
+      <div class="diagram">
+          <svg class="sim-svg">
+              <defs>
+                  <marker id="arrowhead-', is_adj, '" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                      <polygon points="0 0, 10 3.5, 0 7" class="', arrow_class, '" />
+                  </marker>
+                  <marker id="arrowhead-direct" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                      <polygon points="0 0, 10 3.5, 0 7" class="sim-arrow" />
+                  </marker>
+              </defs>
+              
+              <!-- Direct Path (Always active) -->
+              <line x1="80" y1="125" x2="520" y2="125" class="sim-line" marker-end="url(#arrowhead-direct)" />
+              <text x="300" y="145" font-family="sans-serif" font-size="14" fill="#555" text-anchor="middle">Direct Effect</text>
+  
+              <!-- Indirect Paths -->
+              <line x1="80" y1="105" x2="250" y2="45" class="', path_class, '" marker-end="url(#arrowhead-', is_adj, ')" />
+              <line x1="370" y1="45" x2="520" y2="105" class="', path_class, '" marker-end="url(#arrowhead-', is_adj, ')" />
+              <text x="300" y="15" font-family="sans-serif" font-size="14" fill="#c0392b" text-anchor="middle">Indirect Effect via BP</text>
+          </svg>
+          
+          <!-- Conditional Visual Block X -->
+          ', ifelse(is_adj, '<div class="block-x">✖</div>', ''), '
+  
+          <!-- Nodes -->
+          <div id="node-bmi" class="node">Exposure<br>(BMI)</div>
+          <div id="node-bp" class="node">Mediator<br>(Blood Pressure)</div>
+          <div id="node-esrd" class="node">Outcome<br>(ESRD)</div>
+      </div>
+    '))
+  })
+  
+  output$statsUI <- renderUI({
+    is_adj <- input$adjustToggle
+    
+    state_text <- ifelse(is_adj, "Adjusted (Blocked)", "Unadjusted (Total)")
+    state_color <- ifelse(is_adj, "#c0392b", "#27ae60")
+    rr_value <- ifelse(is_adj, "4.68", "6.12")
+    
+    HTML(paste0('
+      <div class="stats-box">
+          <div class="stat-box">
+              Model State:
+              <span class="stat-value" style="color: ', state_color, ';">', state_text, '</span>
+          </div>
+          <div class="stat-box">
+              Observed Relative Risk:
+              <span class="stat-value" style="color: #2980b9;">', rr_value, '</span>
+          </div>
+      </div>
+    '))
   })
   
   # ==========================================
