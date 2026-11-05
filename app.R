@@ -7,18 +7,19 @@ ui <- page_navbar(
   theme = bs_theme(version = 5, bootswatch = "flatly", primary = "#2c3e50"),
   fillable = FALSE, # single global scrollbar
   
-  # octopus cursor follower
+  #adding waiter while page load
   header = tagList(
-    use_waiter(),
-    waiter_preloader(
-      html = tagList(
-        spin_fading_circles(), 
-        h4("Please wait, it takes some time when opening for the first time...", 
-           style = "color: white; margin-top: 20px;")
-      ),
-      color = "#2C3E50" 
-    ),
     tags$head(
+      use_waiter(),
+      waiter_show_on_load(
+        html = tagList(
+          spin_fading_circles(), 
+          h4("Please wait, it takes some time when opening for the first time...", 
+             style = "color: white; margin-top: 20px;")
+        ),
+        color = "#2C3E50" 
+      ),
+      # dino cursor follower
       tags$style(HTML("
         #cursor-follower {
           position: absolute;
@@ -33,7 +34,7 @@ ui <- page_navbar(
           $(document).mousemove(function(e) {
             $('#cursor-follower').css({
               left: e.pageX + 15 + 'px',
-              top:  e.pageY - 15 + 'px'  /* Changed from + 15 to - 15 to raise it */
+              top:  e.pageY - 15 + 'px'
             });
           });
         });
