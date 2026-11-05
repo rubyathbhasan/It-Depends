@@ -7,6 +7,32 @@ ui <- page_navbar(
   theme = bs_theme(version = 5, bootswatch = "flatly", primary = "#2c3e50"),
   fillable = FALSE, # single global scrollbar
   
+  # octopus cursor follower
+  header = tagList(
+    tags$head(
+      tags$style(HTML("
+        #cursor-follower {
+          position: absolute;
+          pointer-events: none;
+          font-size: 40px;
+          z-index: 9999;
+          transition: top 0.05s, left 0.05s;
+        }
+      ")),
+      tags$script(HTML("
+        $(document).ready(function() {
+          $(document).mousemove(function(e) {
+            $('#cursor-follower').css({
+              left: e.pageX + 15 + 'px',
+              top:  e.pageY - 15 + 'px'  /* Changed from + 15 to - 15 to raise it */
+            });
+          });
+        });
+      "))
+    ),
+    div(id = "cursor-follower", "🦖")
+  ),
+  
   # ==========================================
   # TAB 1: CONFOUNDING BIAS
   # ==========================================
