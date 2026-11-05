@@ -5,7 +5,7 @@ pacman::p_load(shiny, ggplot2, bslib, dplyr, tidyr)
 ui <- page_navbar(
   title = "It Depends",
   theme = bs_theme(version = 5, bootswatch = "flatly", primary = "#2c3e50"),
-  fillable = FALSE, # Restores the single global scrollbar for the whole page
+  fillable = FALSE, # single global scrollbar
   
   # ==========================================
   # TAB 1: CONFOUNDING BIAS
