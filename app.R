@@ -8,8 +8,10 @@ ui <- page_navbar(
   fillable = FALSE, # single global scrollbar
   header = tagList(
     tags$head(
-      # dino cursor follower
       tags$style(HTML("
+        /* 1. LOAD FONT GLOBALLY IMMEDIATELY */
+        @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;600&display=swap');
+        /* dino cursor follower */
         #cursor-follower {
           position: absolute;
           pointer-events: none;
@@ -29,16 +31,26 @@ ui <- page_navbar(
         });
       "))
     ),
-    div(id = "cursor-follower", "🦖")
+    div(id = "cursor-follower", "🦖"),
+    uiOutput("font_css")
   ),
-  
+  #adding a global toggle switch to the navigation bar
+  nav_spacer(), 
+  nav_item(
+    div(class = "d-flex align-items-center mt-2",
+        checkboxInput("dyslexic_toggle", 
+                      strong("Dyslexia-friendly view", 
+                             style = "color: #ffffff; margin-right: 15px; font-family: 'Lexend', sans-serif; letter-spacing: 0.05em;"), 
+                      value = FALSE)
+    )
+  ),
   # ==========================================
   # TAB 1: CONFOUNDING BIAS
   # ==========================================
   nav_panel("Confounding",
             navset_card_underline(
               title = "Confounding bias",
-              
+              nav_spacer(),
               # -- SUB-TAB 1: Confounding example --
               nav_panel("Confounding example",
                         layout_columns(col_widths = c(4, 8),
@@ -132,7 +144,7 @@ ui <- page_navbar(
   nav_panel("Berkson's / Selection Bias",
             navset_card_underline(
               title = "Selection Bias Scenarios",
-              
+              nav_spacer(),
               # -- SUB-TAB 1: Smoking & Melanoma (Flipped OR) --
               nav_panel("Scenario 1: Flipped OR (Smoking & Melanoma)",
                         layout_columns(col_widths = c(4, 8),
@@ -312,6 +324,29 @@ ui <- page_navbar(
 # 2. Define the Server Logic
 # ---------------------------------------------------------
 server <- function(input, output) {
+  # Inject lexend font when toggled
+  output$font_css <- renderUI({
+    req(!is.null(input$dyslexic_toggle)) 
+    
+    if (input$dyslexic_toggle) {
+      tags$style(HTML("
+        :root {
+          --bs-font-sans-serif: 'Lexend', sans-serif !important;
+          --bs-body-font-family: 'Lexend', sans-serif !important;
+          --bs-heading-font-family: 'Lexend', sans-serif !important;
+        }
+        
+        body, p, h1, h2, h3, h4, h5, h6, table, th, td, a, div, span, label, input {
+          font-family: 'Lexend', sans-serif !important;
+          letter-spacing: 0.05em !important; 
+          line-height: 1.6 !important;       
+        }
+      "))
+    } else {
+      # Return to app defaults font
+      NULL 
+    }
+  })
   
   # ==========================================
   # TAB 1: CONFOUNDING BIAS
@@ -404,7 +439,7 @@ server <- function(input, output) {
       
       ggplot(plot_df, aes(x = Coffee, y = Risk, fill = Coffee)) +
         geom_bar(stat = "identity", width = 0.5, color="black") +
-        scale_fill_manual(values = c("Heavy Drinker" = "#e74c3c", "Low/None" = "#bdc3c7")) +
+        scale_fill_manual(values = c("Heavy Drinker" = "#D55E00", "Low/None" = "#999999")) +
         scale_y_continuous(labels = scales::percent, limits = c(0, 0.25)) +
         theme_minimal(base_size = 14) +
         labs(title = "Crude Heart Disease Risk (Unadjusted)", y = "Absolute Risk (%)", x = "Coffee Consumption") +
@@ -705,7 +740,7 @@ server <- function(input, output) {
   
   output$plot_measurement <- renderPlot({
     df <- meas_data()
-    ggplot(df, aes(x = measured_bp, y = true_risk)) + geom_point(color = "#9b59b6", size = 3, alpha = 0.6) + geom_smooth(method = "lm", se = FALSE, color = "#2c3e50", linewidth = 1.5) + theme_minimal(base_size = 16) + labs(x = "Measured Blood Pressure (with error)", y = "Stroke Risk Score") + coord_cartesian(xlim = c(60, 180), ylim = c(20, 100))
+    ggplot(df, aes(x = measured_bp, y = true_risk)) + geom_point(color = "#009E73", size = 3, alpha = 0.6) + geom_smooth(method = "lm", se = FALSE, color = "#2c3e50", linewidth = 1.5) + theme_minimal(base_size = 16) + labs(x = "Measured Blood Pressure (with error)", y = "Stroke Risk Score") + coord_cartesian(xlim = c(60, 180), ylim = c(20, 100))
   })
 }
 
