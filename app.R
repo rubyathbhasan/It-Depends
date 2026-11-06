@@ -1,4 +1,4 @@
-pacman::p_load(shiny, ggplot2, bslib, dplyr, tidyr, waiter)
+pacman::p_load(shiny, ggplot2, bslib, dplyr, tidyr)
 
 # 1. Define the UI
 
@@ -6,8 +6,6 @@ ui <- page_navbar(
   title = "It Depends",
   theme = bs_theme(version = 5, bootswatch = "flatly", primary = "#2c3e50"),
   fillable = FALSE, # single global scrollbar
-  
-  #adding waiter while page load
   header = tagList(
     tags$head(
       # dino cursor follower
@@ -127,7 +125,7 @@ ui <- page_navbar(
               )
             )
   ),
-
+  
   # ==========================================
   # TAB 2: BERKSON'S PARADOX & SELECTION BIAS
   # ==========================================
@@ -693,6 +691,7 @@ server <- function(input, output) {
   })
   
   output$meas_dynamic_text <- renderUI({
+    req(input$meas_error)
     df <- meas_data()
     model <- lm(true_risk ~ measured_bp, data = df)
     slope <- coef(model)[2]
